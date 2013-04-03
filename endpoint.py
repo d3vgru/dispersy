@@ -9,6 +9,8 @@ import errno
 import socket
 import sys
 import threading
+import socks
+import AndroidFacade
 
 from .candidate import Candidate
 from .revision import update_revision_information
@@ -216,7 +218,12 @@ class StandaloneEndpoint(RawserverEndpoint):
 
         while True:
             try:
-                self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                # support socks here -- TODO parameterize
+                #self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                self._socket = socks.socksocket(socket.AF_INET, socket.SOCK_DGRAM)
+                tgsConfig = AndroidFacade.getFacade().getConfig()
+                self._socket.setproxy(socks.PROXY_TYPE_SOCKS5,
+                    tgsConfig.getProxyHost(), tgsConfig.getProxyPort())
                 self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 870400)
                 self._socket.bind((ip, port))
                 self._socket.setblocking(0)
