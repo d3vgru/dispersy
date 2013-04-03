@@ -220,6 +220,7 @@ class StandaloneEndpoint(RawserverEndpoint):
             try:
                 # support socks here -- TODO parameterize
                 #self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                AndroidFacade.monitor('dispersy.endpoint: creating socksocket on port {}'.format(port))
                 self._socket = socks.socksocket(socket.AF_INET, socket.SOCK_DGRAM)
                 tgsConfig = AndroidFacade.getFacade().getConfig()
                 self._socket.setproxy(socks.PROXY_TYPE_SOCKS5,
