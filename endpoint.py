@@ -218,13 +218,20 @@ class StandaloneEndpoint(RawserverEndpoint):
 
         while True:
             try:
-                # support socks here -- TODO parameterize
-                #self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                AndroidFacade.monitor('dispersy.endpoint: creating socksocket on port {}'.format(port))
-                self._socket = socks.socksocket(socket.AF_INET, socket.SOCK_DGRAM)
                 tgsConfig = AndroidFacade.getFacade().getConfig()
-                self._socket.setproxy(socks.PROXY_TYPE_SOCKS5,
-                    tgsConfig.getProxyHost(), tgsConfig.getProxyPort())
+                # support socks here -- TODO parameterize & restart dispersy on change
+                if tgsConfig.isProxyEnabled():
+                    proxyHost = tgsConfig.getProxyHost()
+                    proxyPort = tgsConfig.getProxyPort()
+                    AndroidFacade.monitor('dispersy.endpoint: creating socksocket on port {}'.format(port))
+                    self._socket = socks.socksocket(socket.AF_INET, socket.SOCK_DGRAM)
+                    AndroidFacade.monitor('dispersy.endpoint: proxyHost: {}'.format(proxyHost))
+                    AndroidFacade.monitor('dispersy.endpoint: proxyPort: {}'.format(proxyPort))
+                    self._socket.setproxy(socks.PROXY_TYPE_SOCKS5, proxyHost, proxyPort)
+                else:
+                    AndroidFacade.monitor('dispersy.endpoint: creating socket on port {}'.format(port))
+                    self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    
                 self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 870400)
                 self._socket.bind((ip, port))
                 self._socket.setblocking(0)
