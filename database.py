@@ -52,8 +52,11 @@ class Database(object):
         @param file_path: the path to the database file.
         @type file_path: unicode
         """
+        # ERK
+        logger.warning("trying to load database [%s]", file_path)
         assert isinstance(file_path, unicode)
-        logger.debug("loading database [%s]", file_path)
+        # ERK logger.debug("loading database [%s]", file_path)
+        logger.warning("loading database [%s]", file_path)
         self._file_path = file_path
 
         # _CONNECTION, _CURSOR, AND _DATABASE_VERSION are set during open(...)

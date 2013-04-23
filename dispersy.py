@@ -386,19 +386,25 @@ class Dispersy(object):
         """
         Returns the address of the first AF_INET interface it can find.
         """
+        # ERK
+        logger.warning("scanning netifaces for a usable IP")
         blacklist = ["127.0.0.1", "0.0.0.0", "255.255.255.255"]
         for interface in netifaces.interfaces():
             addresses = netifaces.ifaddresses(interface)
             for option in addresses.get(netifaces.AF_INET, []):
+                # ERK
+                logger.warning("interface %s address %s", interface, option["addr"])
                 if "broadcast" in option and "addr" in option and not option["addr"] in blacklist:
-                    logger.debug("interface %s address %s", interface, option["addr"])
+                    # ERK logger.debug("interface %s address %s", interface, option["addr"])
                     return option["addr"]
         #Exception for virtual machines/containers
         for interface in netifaces.interfaces():
             addresses = netifaces.ifaddresses(interface)
             for option in addresses.get(netifaces.AF_INET, []):
+                # ERK
+                logger.warning("interface %s address %s", interface, option["addr"])
                 if "addr" in option and not option["addr"] in blacklist:
-                    logger.debug("interface %s address %s", interface, option["addr"])
+                    # ERK logger.debug("interface %s address %s", interface, option["addr"])
                     return option["addr"]
         logger.error("Unable to find our public interface!")
         return None
